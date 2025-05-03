@@ -16,4 +16,4 @@ Pedro e Daniel
 -> Next
 -> TypeScript
 -> FlexBox
--> ShadoCN
+-> ShadCN
