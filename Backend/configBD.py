@@ -17,5 +17,5 @@ def run_sql(sql: str):
     # salva as alterações no banco de dados
     con.commit()
 
-    # retorna a lista com as linhas
+    # retorna a lista com as linhas 
     return data

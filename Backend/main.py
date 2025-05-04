@@ -25,14 +25,30 @@ class User(BaseModel):
 # criando rotas
 router = APIRouter()
 
+# O QUE FALTA:
+# 1. Criar validação de login 
+#    - Verificar se usuário existe e verificar senha digitada
+#    - Se existe, continua. Se não, pede para cadastrar
+
+# 2. Cadastro no site e validação de usuário
+#    - Verificar se username já existe no banco de dados
+#    - Se não existe, adiciona. Se existe, dá erro 
+
 # Cadastrar novo usuário 
 @router.post('/register')
 def create_user(body: User):
-    password_user, email_user, password_user = body.password_user, body.email_user, body.username
-    
+    password_user, email_user, username = body.password_user, body.email_user, body.username
+
+    run_sql(
+        f"""
+        INSERT INTO users (username, password_users, email_users)
+        VALUES ('{username}', '{password_user}', '{email_user}')
+        """
+    ) 
 
 
-
+# adiciona rotas no site
+app.include_router(router=router)
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
