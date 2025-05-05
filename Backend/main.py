@@ -3,6 +3,7 @@ from fastapi import FastAPI, APIRouter, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import re
+
 from configBD import run_sql
 
 app = FastAPI()
@@ -22,16 +23,17 @@ class User(BaseModel): # classe para validar os dados
 
 router = APIRouter() # criando rotas
 
+
 # Cadastrar novo usuário 
 @router.post('/register')
 def create_user(body: User):
     password_user, email_user, username = body.password_user, body.email_user, body.username # pega os dados
 
-    pattern = '[a-zA-Z0-9_]{3,16}' # caracteres permitidos, retira o espaço em branco
+    pattern = '[a-zA-Z0-9_]{3,16}' # caracteres permitidos
     validate_username = bool(re.fullmatch(pattern, username)) # retorna True se valido
 
     if (validate_username == False):
-        return HTTPException(status_code=400, detail='Usuário inválido')
+        raise HTTPException(status_code=400, detail='Usuário inválido')
 
 
     data = run_sql( # retorna linhas em que o username foi encontrado 
@@ -40,15 +42,21 @@ def create_user(body: User):
         """
     )
 
-    if data == []: 
-        run_sql(
-            f"""
-            INSERT INTO users (username, password_user, email_user)
-            VALUES ('{username}', '{password_user}', '{email_user}')
-            """
+    if data == []:
+        try:
+            run_sql(
+                f"""
+                INSERT INTO users (username, password_user, email_user)
+                VALUES ('{username}', '{password_user}', '{email_user}')
+                """
             )
+        except:
+            raise HTTPException(status_code=400, detail='Não foi possível cadastrar usuário')
     else:
-        raise HTTPException(status_code=400, detail='Usuário não disponível')        
+        raise HTTPException(status_code=400, detail='Usuário não disponível')
+
+    return {'detail' : 'Usuário cadastrado'}        
+
 
 
 
