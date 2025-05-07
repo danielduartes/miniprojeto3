@@ -85,29 +85,6 @@ def create_user(body: User):
 
 
 
-
-# Mostra todos os posts do feed
-@router.get('/login/feed/{username}') # o uso do {username} obriga o front a me enviar um parâmetro informando usuário
-def show_feed(username: str):
-    all_posts_infos = []
-
-    # retorna posts do mais recente (id_post maior) para o mais antigo (id_post menor)
-    posts = run_sql("SELECT * FROM posts ORDER BY id_post DESC")
-
-    for p in posts: # itera em todos os posts retornado do banco de dados
-
-
-
-        all_posts_infos.append({
-            'id_post' : p[0],
-            'owner' : p[1],
-            'content' : p[2]
-        })
-
-    # por padrão, o fastapi converte os dados retornados para JSON: https://fastapi.tiangolo.com/pt/advanced/response-directly/
-    return all_posts_infos
-
-
 app.include_router(router=router) # adiciona rotas
 
 if __name__ == "__main__":
