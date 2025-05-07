@@ -6,9 +6,10 @@ from pydantic import BaseModel
 from typing import Optional
 import re
 
-from configBD import run_sql
+from configBD import run_sql, lifespan
 
-app = FastAPI()
+# cria o banco de dados
+app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware, 
@@ -18,12 +19,14 @@ app.add_middleware(
     allow_headers = ["*"]
 ) 
 
-class User(BaseModel): # classe para validar os dados
+ # classe para validar os dados
+class User(BaseModel):
     username: str
     email_user: Optional[str] = None
     password_user: str
 
-router = APIRouter() # criando rotas
+# criando rotas
+router = APIRouter()
 
 # Login
 @router.post('/login')
@@ -82,9 +85,8 @@ def create_user(body: User):
 
     return {'detail' : 'Usuário cadastrado'}        
 
-# Mostra o feed de forma personalizada a cada usuário
-# o uso do {username} obriga o front a me enviar um parâmetro informando usuário
-@router.get('/login/feed/{username}') 
+# Mostra o feed
+@router.get('/feed/{username}') # o uso do {username} obriga o front a me enviar um parâmetro informando usuário 
 def show_feed(username: str):
     all_posts_infos = []
 
@@ -122,7 +124,9 @@ def show_feed(username: str):
             'conteudo' : conteudo,
             'likes' : likes,
             'dislikes' : dislikes,
-            'is_owner' : True if owner_post == username else False
+            'viewer_is_owner' : True if owner_post == username else False, # indica se quem esta vendo é autor
+            'viewer_give_like' : True if username in likes else False,
+            'viewer_give_dislike' : True if username in dislikes else False
             }
         )
 
@@ -131,7 +135,10 @@ def show_feed(username: str):
 
 
 
-app.include_router(router=router) # adiciona rotas
+
+
+# adiciona rotas
+app.include_router(router=router) 
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)
