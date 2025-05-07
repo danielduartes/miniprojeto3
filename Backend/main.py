@@ -61,13 +61,13 @@ def create_user(body: User):
         raise HTTPException(status_code=400, detail='Usuário inválido')
 
 
-    data = run_sql( # retorna linhas em que o username foi encontrado 
+    exist_user = run_sql( # retorna linhas em que o username foi encontrado 
         f"""
         SELECT * FROM users WHERE username = '{username}'
         """
     )
 
-    if data == []:
+    if not exist_user:
         try:
             run_sql(
                 f"""
