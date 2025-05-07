@@ -49,13 +49,12 @@ def login_user(body: User):
     else:
         return  {"mensagem": "Login feito com sucesso", "user" : username}
 
-
 # Cadastrar novo usuário 
 @router.post('/register')
 def create_user(body: User):
     password_user, email_user, username = body.password_user, body.email_user, body.username # pega os dados
 
-    pattern = '[a-zA-Z0-9_]{3,16}' # caracteres permitidos
+    pattern = '[a-zA-Z0-9_]{3,24}' # caracteres permitidos
     validate_username = bool(re.fullmatch(pattern, username)) # retorna True se valido
 
     if (validate_username == False):
@@ -83,6 +82,24 @@ def create_user(body: User):
 
     return {'detail' : 'Usuário cadastrado'}        
 
+@router.get('/login/feed/{username}') # o uso do {username} obriga o front a me enviar um parâmetro informando usuário
+def show_feed(username: str):
+    all_posts_infos = []
+
+    # retorna posts do mais recente (id_post maior) para o mais antigo (id_post menor)
+    posts = run_sql("SELECT * FROM posts ORDER BY id_post DESC")
+
+    for p in posts: # itera em todos os posts retornado do banco de dados
+        
+        all_posts_infos.append(
+            {
+            'id_post' : p[0],
+            'owner' : p[1],
+            'content' : p[2]
+            }
+        )
+
+    return all_posts_infos
 
 
 app.include_router(router=router) # adiciona rotas
