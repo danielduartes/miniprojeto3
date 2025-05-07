@@ -89,7 +89,8 @@ def show_feed(username: str):
     # retorna posts do mais recente (id_post maior) para o mais antigo (id_post menor)
     posts = run_sql("SELECT * FROM posts ORDER BY id_post DESC")
 
-    for p in posts: # itera em todos os posts retornado do banco de dados
+    # mostra todos os posts
+    for p in posts: 
         
         all_posts_infos.append(
             {
