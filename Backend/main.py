@@ -82,25 +82,53 @@ def create_user(body: User):
 
     return {'detail' : 'Usuário cadastrado'}        
 
-@router.get('/login/feed/{username}') # o uso do {username} obriga o front a me enviar um parâmetro informando usuário
+# Mostra o feed de forma personalizada a cada usuário
+# o uso do {username} obriga o front a me enviar um parâmetro informando usuário
+@router.get('/login/feed/{username}') 
 def show_feed(username: str):
     all_posts_infos = []
 
     # retorna posts do mais recente (id_post maior) para o mais antigo (id_post menor)
-    posts = run_sql("SELECT * FROM posts ORDER BY id_post DESC")
+    posts = run_sql("SELECT * FROM posts ORDER BY post_id DESC")
 
     # mostra todos os posts
     for p in posts: 
+        # armazena os dados do post
+        post_id, conteudo, owner_post = p[0], p[1], p[2]
+        likes = []
+        dislikes = []
+
+        # guarda todas as informações de quem interagiu
+        interactions = run_sql(
+                f"""
+                SELECT username, interacao FROM interactions
+                WHERE post_id = {post_id}
+                """)
         
+        # descobre se a interação foi like ou dislike
+        for i in interactions:
+            name, type_interact = i[0], i[1]
+
+            if (type_interact == 'like'):
+                likes.append(name)
+            else:
+                dislikes.append(name)
+
+        # armazena as informações da postagem 
         all_posts_infos.append(
             {
-            'id_post' : p[0],
-            'owner' : p[1],
-            'content' : p[2]
+            'post_id' : post_id,
+            'owner_post' : owner_post,
+            'conteudo' : conteudo,
+            'likes' : likes,
+            'dislikes' : dislikes,
+            'is_owner' : True if owner_post == username else False
             }
         )
 
+    # retorna a lista que contém todos os posts 
     return all_posts_infos
+
 
 
 app.include_router(router=router) # adiciona rotas
