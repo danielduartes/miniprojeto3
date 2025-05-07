@@ -1,7 +1,9 @@
 import uvicorn
 from fastapi import FastAPI, APIRouter, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
+from typing import Optional
 import re
 
 from configBD import run_sql
@@ -18,10 +20,34 @@ app.add_middleware(
 
 class User(BaseModel): # classe para validar os dados
     username: str
-    email_user: str
+    email_user: Optional[str] = None
     password_user: str
 
 router = APIRouter() # criando rotas
+
+# Login
+@router.post('/login')
+def login_user(body: User):
+    password_user, username = body.password_user, body.username
+
+    result_user = run_sql (f"""
+        SELECT 
+            username,
+            password_user
+
+        FROM
+            users
+        WHERE username = '{username}' AND password_user = '{password_user}'
+""") 
+    
+    #Retorna none se o usuario não for encontrado, retorna um diconario com o usuario e a senha ,caso encontre
+
+    if not result_user :
+        raise HTTPException(status_code=401, detail="Credenciais inválidas")
+        #o raise para o código para mostrar um erro na tela
+        #HTTPException retorna uma mensagem de erro HTTP
+    else:
+        return  {"mensagem": "Login feito com sucesso", "user" : username}
 
 
 # Cadastrar novo usuário 
@@ -60,7 +86,29 @@ def create_user(body: User):
 
 
 
+# Mostra todos os posts do feed
+@router.get('/login/feed/{username}') # o uso do {username} obriga o front a me enviar um parâmetro informando usuário
+def show_feed(username: str):
+    all_posts_infos = []
+
+    # retorna posts do mais recente (id_post maior) para o mais antigo (id_post menor)
+    posts = run_sql("SELECT * FROM posts ORDER BY id_post DESC")
+
+    for p in posts: # itera em todos os posts retornado do banco de dados
+
+
+
+        all_posts_infos.append({
+            'id_post' : p[0],
+            'owner' : p[1],
+            'content' : p[2]
+        })
+
+    # por padrão, o fastapi converte os dados retornados para JSON: https://fastapi.tiangolo.com/pt/advanced/response-directly/
+    return all_posts_infos
+
+
 app.include_router(router=router) # adiciona rotas
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="127.0.0.1", port=8000)

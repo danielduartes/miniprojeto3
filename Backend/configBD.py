@@ -20,3 +20,6 @@ def run_sql(sql: str):
     # retorna a lista com as linhas 
     return data
 
+
+
+
