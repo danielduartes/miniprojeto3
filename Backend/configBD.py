@@ -30,6 +30,7 @@ async def lifespan(app: FastAPI):
         post_id INTEGER PRIMARY KEY AUTOINCREMENT,
         conteudo VARCHAR(500) NOT NULL,
         username VARCHAR(24) NOT NULL,
+        midia BLOB,
 
         FOREIGN KEY (username) REFERENCES users(username)
         )

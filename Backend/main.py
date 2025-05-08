@@ -1,11 +1,9 @@
-import uvicorn
 from fastapi import FastAPI, APIRouter, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.encoders import jsonable_encoder
-from pydantic import BaseModel
-from typing import Optional
 import re
+import uvicorn
 
+from schemas import *
 from configBD import run_sql, lifespan
 
 # cria o banco de dados
@@ -20,17 +18,13 @@ app.add_middleware(
 ) 
 
  # classe para validar os dados
-class User(BaseModel):
-    username: str
-    email_user: Optional[str] = None
-    password_user: str
 
 # criando rotas
 router = APIRouter()
 
 # Login
 @router.post('/login')
-def login_user(body: User):
+def login_user(body: Login_user):
     password_user, username = body.password_user, body.username
 
     result_user = run_sql (f"""
@@ -54,7 +48,7 @@ def login_user(body: User):
 
 # Cadastrar novo usuário 
 @router.post('/register')
-def create_user(body: User):
+def create_user(body: Register_user):
     password_user, email_user, username = body.password_user, body.email_user, body.username # pega os dados
 
     pattern = '[a-zA-Z0-9_]{3,24}' # caracteres permitidos
@@ -85,9 +79,70 @@ def create_user(body: User):
 
     return {'detail' : 'Usuário cadastrado'}        
 
+# Criar post
+@router.post('/feed/create_post')
+def create_post(body: Post):
+    exist_user = run_sql( 
+                f"""
+                SELECT * FROM users WHERE username = '{body.username}'        
+                """)
+    
+    # verifica se o username está cadastrado
+    if not exist_user: 
+        raise HTTPException(status_code=400, detail='Necessário criar conta!')
+    
+    conteudo = body.conteudo
+    username = body.username
+
+    # insere no banco de dados
+    run_sql(
+            f"""
+            INSERT INTO posts (username, conteudo)
+            VALUES ('{username}', '{conteudo}')
+            """)
+    
+    return {'detail' : 'Postagem feita com sucesso'}
+
+# Editar post
+@router.put('/feed/edit_post')
+def edit_post(body: Edit_post):
+    username, conteudo, post_id = body.username, body.conteudo, body.post_id
+    
+    owner = (run_sql(f"SELECT username FROM posts WHERE post_id = {post_id}"))
+
+    if not owner or owner[0][0] != username:
+        raise HTTPException(status_code=400, detail='Não possui autorização para editar o post')
+
+    run_sql(
+            f"""
+            UPDATE posts
+            SET conteudo = '{conteudo}'
+            WHERE post_id = {post_id}
+            """)
+
+    return {'detail' : 'Post alterado com sucesso'}
+
+# Deletar post
+@router.delete('/feed/delet_post')
+def delete_post(body: Delete):
+    username, post_id = body.username, body.post_id
+
+    owner = (run_sql(f"SELECT username FROM posts WHERE post_id = {post_id}"))
+
+    if not owner or owner[0][0] != username:
+        raise HTTPException(status_code=400, detail='Não possui autorização para editar o post')
+
+    run_sql(
+            f"""
+            DELETE FROM posts WHERE post_id = {post_id}
+            """
+        )
+
+    return {'detail': 'Post deletado'}
+
 # Mostra o feed
 @router.get('/feed/{username}') # o uso do {username} obriga o front a me enviar um parâmetro informando usuário 
-def show_feed(username: str):
+def show_feed(username : str):
     all_posts_infos = []
 
     # retorna posts do mais recente (id_post maior) para o mais antigo (id_post menor)
@@ -132,9 +187,6 @@ def show_feed(username: str):
 
     # retorna a lista que contém todos os posts 
     return all_posts_infos
-
-
-
 
 
 # adiciona rotas
