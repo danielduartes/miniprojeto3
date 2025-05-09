@@ -50,7 +50,7 @@ def login_user(body: Login_user):
         #o raise para o código para mostrar um erro na tela
         #HTTPException retorna uma mensagem de erro HTTP
     else:
-        return  {"mensagem": "Login feito com sucesso", "user" : username}
+        return  {"mensagem": "Login feito com sucesso", "username" : username}
 
 # Cadastrar novo usuário 
 @router.post('/register')
@@ -83,7 +83,7 @@ def create_user(body: Register_user):
     else:
         raise HTTPException(status_code=400, detail='Usuário não disponível')
 
-    return {'detail' : 'Usuário cadastrado'}        
+    return {'detail' : 'Usuário cadastrado', 'username': username}        
 
 # Criar post
 @router.post('/feed/create_post')
@@ -107,7 +107,7 @@ async def create_post(username : str = Form(...), text: str = Form(...), midia :
         )
 
 
-    return {"text": text, "usuario": username ,"nome_arquivo": 'deu certo'}
+    return {'detail': 'Post publicado com sucesso'}
 
 # Editar post
 @router.put('/feed/edit_post')
@@ -229,12 +229,14 @@ def interact_post(body: Interact, post_id: int):
                 INSERT INTO interactions (username, post_id, interacao)
                 VALUES ('{body.username}', {post_id}, '{body.type_interact}')
                 """)
+        detail = "add"
     elif (already_interact[0][1] == body.type_interact): # se interagiu, descobre se a interação foi like ou dislike
         run_sql(
                 f"""
                 DELETE FROM interactions
                 WHERE post_id = {post_id} AND username = '{body.username}'
                 """)
+        detail = "remove"
     else: # se já interagiu e mudou a reação, então atualiza no banco de dados
         run_sql(
                 f"""
@@ -242,8 +244,10 @@ def interact_post(body: Interact, post_id: int):
                 SET interacao = '{body.type_interact}'
                 WHERE post_id = {post_id} AND username = '{body.username}' 
                 """)
+        detail = "update"
 
-    return {'detail': 'Interação atualizada', 'post_id': post_id, 'username': {body.username}}
+    # detail informa se foi uma operação para adicionar, remover ou atualizar uma interação
+    return {'username': body.username, 'post_id': post_id, 'detail': detail, 'interact': body.type_interact}
 
 # adiciona rotas
 app.include_router(router=router) 
