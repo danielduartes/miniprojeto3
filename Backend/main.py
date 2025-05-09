@@ -37,11 +37,10 @@ def login_user(body: Login_user):
         SELECT 
             username,
             password_user
-
         FROM
             users
         WHERE username = '{username}' AND password_user = '{password_user}'
-""") 
+        """) 
     
     #Retorna none se o usuario não for encontrado, retorna um diconario com o usuario e a senha ,caso encontre
 
@@ -70,7 +69,7 @@ def create_user(body: Register_user):
                         """)[0][0]
                         )
 
-    if exist_user:
+    if not exist_user:
         try:
             run_sql(
                 f"""
@@ -136,7 +135,7 @@ async def edit_post(username: str,post_id: str, conteudo: str, midia : Optional[
     return {'detail' : 'Post alterado', 'id_post_changed' : post_id, 'text_edited': conteudo, 'midia_edited': midia}
 
 # Deletar post
-@router.delete('/feed/delet_post')
+@router.delete('/feed/delete_post')
 def delete_post(body: Delete):
     username, post_id = body.username, body.post_id
 
