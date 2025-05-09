@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-
+from fastapi import Form, File, UploadFile
 # schemas: define qual deve ser o formato dos dados e entradas aceitas pela API
 # este código define como o front end deve enviar cada requisição para a API
 
@@ -14,21 +14,11 @@ class Login_user(BaseModel):
     username : str
     password_user : str
 
-# Dados para postar
-class Post(BaseModel):
-    username : str
-    conteudo : str
-
-# Dados para editar
-class Edit_post(BaseModel):
-    username : str
-    post_id : int
-    conteudo : str
-
-# Para mostrar no feed
-class Show_feed(BaseModel):
-    username : str
-
+# Dados para deletar posts
 class Delete(BaseModel):
     username : str
     post_id : int
+
+class Interact(BaseModel):
+    username : str
+    type_interact : str
