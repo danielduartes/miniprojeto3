@@ -1,0 +1,92 @@
+import { useState } from react
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feed-Trilha</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="shortcut_icon" href="caminhodoarquivo/favicon.ico" />
+</head>
+<body>
+    <header>
+        <p>TrilhaGram</p>
+    </header>
+
+    <main class="main">
+<!-- Formulario de publicacao -->
+        <div class="Post">
+            <div class="User">
+                <strong> Pedro</strong>
+            </div>
+        <form action="" class="PostFormulario">
+        <textarea name="Texto" placeholder="Inserir Texto..." rows="1" cols="100"></textarea>
+        
+        <div class="Icons_Botoes">
+            <div class="icons">
+                <button class="BotaoImagem"><img src="/assets/Image.svg" alt="Adicionar uma imagem"></button>
+            </div>
+            <button type="submit" class="BotaoEditar">Editar</button>
+            <button type="submit" class="BotaoSubmit">Publicar</button>
+        </div>
+    </form>
+<!-- --------------------------------------------- -->
+    <ul class="Postagens">
+        <li class="Postagem">
+            <div class="infoUserPost">
+                <div class="UserName"></div>
+                <strong>Juscelindo</strong>
+
+            </div>
+
+            <p>
+            1% melhor a cada dia!
+            </p>
+            <div class="BotoesAcao">
+                <button type="button" class="arquivos"><img src="/assets/Like1.svg" alt="Like"></button>
+                <button type="button" class="arquivos"><img src="/assets/Deslike1.svg" alt="Deslike"></button>
+                <button type="button" class="arquivos"><img src="/assets/ReacaoCerta.svg" alt="Reação"></button>
+            </div>
+        </li>
+
+         <li class="Postagem">
+            <div class="infoUserPost">
+                <div class="UserName"></div>
+                <strong>Daniel_Boy</strong>
+
+            </div>
+
+            <p>
+            Saiba que as pessoas ao seu redor estão dando o melhor!
+            </p>
+            <div class="BotoesAcao">
+                <button type="button" class="arquivos"><img src="/assets/Like1.svg" alt="Like"></button>
+                <button type="button" class="arquivos"><img src="/assets/Deslike1.svg" alt="Deslike"></button>
+                <button type="button" class="arquivos"><img src="/assets/ReacaoCerta.svg" alt="Reação"></button>
+            </div>
+        </li>
+
+         <li class="Postagem">
+            <div class="infoUserPost">
+                <div class="UserName"></div>
+                <strong>Papito</strong>
+
+            </div>
+
+            <p>
+            Mire na lua, porque mesmo que você erre acabará entre as estrelas!
+            </p>
+            <div class="BotoesAcao">
+                <button type="button" class="arquivos"><img src="/assets/Like1.svg" alt="Like"></button>
+                <button type="button" class="arquivos"><img src="/assets/Deslike1.svg" alt="Deslike"></button>
+                <button type="button" class="arquivos"><img src="/assets/ReacaoCerta.svg" alt="Reação"></button>
+            </div>
+        </li>
+      </ul>
+
+
+    </main>
+</body>
+
+</html>

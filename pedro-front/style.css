@@ -1,0 +1,186 @@
+*{
+    margin: 0;
+    padding: 0;
+
+    box-sizing: border-box;
+}
+
+body{
+    background: white;
+    font-family: Arial, Helvetica, sans-serif;
+
+}
+
+li{
+    list-style: none;
+}
+
+header{
+    width: 100%;
+    height: 50px;
+
+    background: #0ae361;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    box-shadow: 1px 0 3px black;
+}
+
+.main{
+
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.Post{
+
+    width: 100%;
+    height: 130px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin: 50px 0;
+
+    background: whitesmoke;
+    border-radius: 10px;
+    box-shadow: 1px 0 3px black;
+
+    padding: 5px;
+
+}
+
+
+.Post .User{
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
+
+.Post .User strong{
+    
+    font-size: 16px;
+    color:#1222d0;
+    margin-left: 10px;
+}
+
+.Post form.PostFormulario{
+
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.Post  form.PostFormulario textarea{
+
+    background: white;
+    margin: 15px 0;
+    padding: 15px;
+    border-radius: 10px;
+    resize: none;
+    border: 0;
+    font-weight:550 ;
+    font-family: sans-serif;
+    color: #000000;
+    
+}
+
+.Post form.PostFormulario .Icons_Botoes{
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between
+}
+
+.Post form.PostFormulario .Icons_Botoes .icons button{
+
+    outline: none;
+    border: 0;
+    background: whitesmoke;
+    display: flex;
+    cursor: pointer;
+
+}
+
+.Post form.PostFormulario .Icons_Botoes button.BotaoEditar{
+
+    background:#808080;
+    padding: 5px 30px;
+    border-radius: 10px;
+    color: black;
+    font-weight: 550;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.Post form.PostFormulario .Icons_Botoes button.BotaoEditar:hover{
+    background:#706e6e;
+}
+
+.Post form.PostFormulario .Icons_Botoes button.BotaoSubmit{
+
+    background:#0ae361;
+    padding: 5px 30px;
+    border-radius: 10px;
+    color: black;
+    font-weight: 550;
+    cursor: pointer;
+    transition: background 0.2s;
+
+}
+
+.Post form.PostFormulario .Icons_Botoes button.BotaoSubmit:hover{
+    background:#07bf51;
+}
+
+ul.Postagens li.Postagem{
+    margin-top:40px;
+    margin-bottom: 40px ;
+    width: 100%;
+    background: whitesmoke;
+    border-radius: 10px;
+    box-shadow: 1px 0 3px #0000009f;
+    padding: 5px;
+}
+
+ul.Postagens li.Postagem .infoUserPost{
+
+    display: flex;
+    align-items: center;
+}
+
+ul.Postagens li.Postagem .infoUserPost .UserName{
+
+    margin-left: 7px ;
+}
+
+ul.Postagens li.Postagem >p{
+
+    width:100% ;
+    margin: 20px 0;
+    font-weight: 200;
+    color: #282626;
+}
+
+ul.Postagens li.Postagem .BotoesAcao{
+    display: flex;
+    align-items: center;
+}
+
+ul.Postagens li.Postagem .BotoesAcao button.arquivos{
+
+    margin-right: 10px;
+    border: none;
+    cursor: pointer;
+    background: whitesmoke;
+    align-items: center;
+    justify-content: center;
+    display:flex;
+
+    transition: background 0.2s;
+}
+
