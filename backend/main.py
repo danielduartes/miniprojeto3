@@ -108,12 +108,34 @@ async def create_post(username : str = Form(...), text: str = Form(...), midia :
 
     return {'detail': 'Post publicado com sucesso'}
 
-# Editar post
-@router.put('/feed/edit_post')
-async def edit_post(username: str,post_id: str, conteudo: str, midia : Optional[bytes] = File(None)):
-    print(midia)
-    owner = (run_sql(f"SELECT username FROM posts WHERE post_id = {post_id}"))
+# Criar post
+@router.post('/feed/create_post/{username}')
+async def create_post(username : str, text: str = Form(...), midia : Optional[bytes] = Depends(validar_midia)):
+    #Usar File e Form juntos quando precisar receber dados e arquivos na mesma requisição.
+    # Optional bytes pega os bytes do arquivo
+    # A função file espera um arquivo do front e salva como bytes direto, se não receber salva como None
+    if midia != None:
+        run_sql(
+            f"""
+            INSERT INTO posts (conteudo, midia, username) 
+            VALUES ('{text}', X'{midia.hex()}', '{username}')
+        """
+        )
+    else:
+        run_sql(
+            f"""
+            INSERT INTO posts (conteudo, username) 
+            VALUES ('{text}', '{username}')
+        """
+        )
 
+
+    return {'detail': 'Post publicado com sucesso'}
+
+# Editar post
+@router.put('/feed/edit_post/{username}')
+async def edit_post(username: str, post_id: str, conteudo: str, midia : Optional[bytes] = Depends(validar_midia)):
+    owner = (run_sql(f"SELECT username FROM posts WHERE post_id = {post_id}"))
     if not owner or owner[0][0] != username:
         raise HTTPException(status_code=400, detail='Não possui autorização para editar o post')
     
@@ -124,6 +146,7 @@ async def edit_post(username: str,post_id: str, conteudo: str, midia : Optional[
             SET conteudo = '{conteudo}', midia = X'{midia.hex()}'
             WHERE post_id = {post_id}
             """)
+        midia = base64.b64encode(midia).decode("utf-8")
     else:
         run_sql(
             f"""
@@ -131,26 +154,8 @@ async def edit_post(username: str,post_id: str, conteudo: str, midia : Optional[
             SET conteudo = '{conteudo}'
             WHERE post_id = {post_id}
             """)
-
+        
     return {'detail' : 'Post alterado', 'id_post_changed' : post_id, 'text_edited': conteudo, 'midia_edited': midia}
-
-# Deletar post
-@router.delete('/feed/delete_post')
-def delete_post(body: Delete):
-    username, post_id = body.username, body.post_id
-
-    owner = run_sql(f"SELECT username FROM posts WHERE post_id = {post_id}")
-
-    if not owner or owner[0][0] != username:
-        raise HTTPException(status_code=400, detail='Não possui autorização para editar o post')
-
-    run_sql(
-            f"""
-            DELETE FROM posts WHERE post_id = {post_id}
-            """
-        )
-
-    return {'detail': 'Post deletado', 'id_post_deleted': post_id}
 
 # Mostra o feed
 @router.get('/feed/{username}') # o uso do {username} obriga o front a me enviar um parâmetro informando usuário 

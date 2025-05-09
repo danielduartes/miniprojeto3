@@ -16,7 +16,6 @@ class Login_user(BaseModel):
 
 # Dados para deletar posts
 class Delete(BaseModel):
-    username : str
     post_id : int
 
 class Interact(BaseModel):
